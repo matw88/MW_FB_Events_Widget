@@ -26,6 +26,7 @@ class MW_FB_Events_Widget extends WP_Widget {
 	
 	private $fb;
 	private $errors;
+	private $count = 1;
 	
 	/**
 	 * Constructor
@@ -87,7 +88,6 @@ class MW_FB_Events_Widget extends WP_Widget {
 	public function widget( $args, $instance ) {
 		
 		$event = $this->get_event_data(!empty($instance['event_id'])?$instance['event_id']:0);
-
 		if (isset($event['error'])) {
 			echo $event['error']['message'];			
 		} else {
@@ -110,7 +110,7 @@ class MW_FB_Events_Widget extends WP_Widget {
 	.mw_widget h3 span {
 		cursor: pointer;
 	}
-	.mw_time_box {
+	#<?php echo $args['widget_id']?> .mw_time_box {
 		width: <?php echo $timer_count>0?100/$timer_count:0?>%;
 		height: 60px;
 		text-align: center;
@@ -149,31 +149,31 @@ class MW_FB_Events_Widget extends WP_Widget {
 			<?php endif;?>
 			<?php if(!empty($instance['days'])):?>
 			<div class="mw_time_box">
-				<div id="mw_days" class="mw_timer">0</div>
+				<div id="mw_days<?php echo $this->count?>" class="mw_timer">0</div>
 				<div class="mw_caption"><?php _e('Days');?></div>
 			</div>
 			<?php endif;?>
 			<?php if(!empty($instance['hours'])):?>
 			<div class="mw_time_box">
-				<div id="mw_hours" class="mw_timer">0</div>
+				<div id="mw_hours<?php echo $this->count?>" class="mw_timer">0</div>
 				<div class="mw_caption"><?php _e('Hours');?></div>
 			</div>
 			<?php endif;?>
 			<?php if(!empty($instance['minutes'])):?>
 			<div class="mw_time_box">
-				<div id="mw_minutes" class="mw_timer">0</div>
+				<div id="mw_minutes<?php echo $this->count?>" class="mw_timer">0</div>
 				<div class="mw_caption"><?php _e('Minutes');?></div>
 			</div>
 			<?php endif;?>
 			<?php if(!empty($instance['seconds'])):?>
 			<div class="mw_time_box">
-				<div id="mw_seconds" class="mw_timer">0</div>
+				<div id="mw_seconds<?php echo $this->count?>" class="mw_timer">0</div>
 				<div class="mw_caption"><?php _e('Seconds');?></div>
 			</div>
 			<?php endif;?>
 			<?php if(!empty($instance['hundredth_second'])):?>
 			<div class="mw_time_box">
-				<div id="mw_hundredth_second" class="mw_timer">0</div>
+				<div id="mw_hundredth_second<?php echo $this->count?>" class="mw_timer">0</div>
 				<div class="mw_caption"><?php _e('Hundredths of seconds');?></div>
 			</div>
 			<?php endif;?>
@@ -181,7 +181,7 @@ class MW_FB_Events_Widget extends WP_Widget {
 		</aside>
 <script type="text/javascript">
 <!--
-function mw_timer()
+function mw_timer<?php echo $this->count?>()
 {
 	var start = Date.parse('<?php echo $event['start_time']?>');
 	var c = new Date();
@@ -196,49 +196,49 @@ function mw_timer()
 	var miliseconds = start - current;
 	
 	var left = miliseconds;
-	console.log(miliseconds);
+	
 	if (left > 0) {
 		<?php if(!empty($instance['days'])):?>
 		var timer_d = Math.floor(left/days);
-		document.getElementById("mw_days").innerHTML = timer_d;
+		document.getElementById("mw_days<?php echo $this->count?>").innerHTML = timer_d;
 		left -= timer_d*days;
 		<?php endif;?>
 		<?php if(!empty($instance['hours'])):?>
 		var timer_h = Math.floor(left/hours);
-		document.getElementById("mw_hours").innerHTML = timer_h;
+		document.getElementById("mw_hours<?php echo $this->count?>").innerHTML = timer_h;
 		left -= timer_h*hours;
 		<?php endif;?>
 		<?php if(!empty($instance['minutes'])):?>
 		var timer_m = Math.floor(left/minutes);
-		document.getElementById("mw_minutes").innerHTML = timer_m;
+		document.getElementById("mw_minutes<?php echo $this->count?>").innerHTML = timer_m;
 		left -= timer_m*minutes;
 		<?php endif;?>
 		<?php if(!empty($instance['seconds'])):?>
 		var timer_s = Math.floor(left/seconds);
-		document.getElementById("mw_seconds").innerHTML = timer_s;
+		document.getElementById("mw_seconds<?php echo $this->count?>").innerHTML = timer_s;
 		left -= timer_s*seconds;
 		<?php endif;?>
 		<?php if(!empty($instance['hundredth_second'])):?>
 		var timer_ms = Math.floor(left/hundredth_second);
-		document.getElementById("mw_hundredth_second").innerHTML = timer_ms;
+		document.getElementById("mw_hundredth_second<?php echo $this->count?>").innerHTML = timer_ms;
 		left -= timer_ms*hundredth_second;
 		<?php endif;?>
 	} else {
-		document.getElementById("mw_days").innerHTML = 0;
-		document.getElementById("mw_hours").innerHTML = 0;
-		document.getElementById("mw_minutes").innerHTML = 0;
-		document.getElementById("mw_seconds").innerHTML = 0;
-		document.getElementById("mw_hundredth_second").innerHTML = 0;
+		document.getElementById("mw_days<?php echo $this->count?>").innerHTML = 0;
+		document.getElementById("mw_hours<?php echo $this->count?>").innerHTML = 0;
+		document.getElementById("mw_minutes<?php echo $this->count?>").innerHTML = 0;
+		document.getElementById("mw_seconds<?php echo $this->count?>").innerHTML = 0;
+		document.getElementById("mw_hundredth_second<?php echo $this->count?>").innerHTML = 0;
 	}
 }
-mw_timer();
+mw_timer<?php echo $this->count?>();
 <?php 
 	if (!empty($instance['hundredth_second'])) {
-		echo 'var mw_interval = setInterval(function(){mw_timer()},10);';
+		echo 'var mw_interval'.$this->count.' = setInterval(function(){mw_timer'.$this->count.'()},10);';
 	} elseif(!empty($instance['seconds'])) {
-		echo 'var mw_interval = setInterval(function(){mw_timer()},1000);';
+		echo 'var mw_interval'.$this->count.' = setInterval(function(){mw_timer'.$this->count.'()},1000);';
 	} else {
-		echo 'var mw_interval = setInterval(function(){mw_timer()},60000);';
+		echo 'var mw_interval'.$this->count.' = setInterval(function(){mw_timer'.$this->count.'()},60000);';
 	}
 ?>
 //-->
@@ -246,6 +246,7 @@ mw_timer();
 
 <?php
 		}
+		$this->count++;
 	}
 
 	/**
