@@ -125,7 +125,7 @@ class MW_FB_Events_Widget extends WP_Widget {
 				</a>
 			</h1>
 			<?php if(!empty($instance['picture'])):?>
-			<div id="mw_event_picture">
+			<div class="mw_event_picture">
 				<a href="<?php echo $href?>" title="<?php echo $title;?>" target="_blank">
 					<img src="<?php echo $href_graph?>/picture?type=large">
 				</a>
