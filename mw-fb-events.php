@@ -17,7 +17,7 @@ require_once 'src/facebook.php';
  *
  * @link http://www.matw.pl
  * @author Mateusz Wojtuła
- * @version 1.0
+ * @version 1.1
  */
 class MW_FB_Events_Widget extends WP_Widget {
 	
