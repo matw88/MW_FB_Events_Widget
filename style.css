@@ -1,0 +1,28 @@
+.mw_widget p {
+	text-align: justify;
+}
+.mw_widget h3 span {
+	cursor: pointer;
+}
+.mw_time_box .mw_timer {
+	font-size: 20px;
+	width: 100%;
+	font-weight: bold;
+}
+.mw_time_box .mw_caption {
+	font-size: 11px;
+	display: block;
+}
+.mw_clear {
+	clear: both;
+}
+#mw_event_picture {
+	text-align: center;
+	padding: 0px 10px 18px 10px;
+}
+.mw_time_box {
+	height: 60px;
+	text-align: center;
+	background: #fff;
+	float: left;
+}

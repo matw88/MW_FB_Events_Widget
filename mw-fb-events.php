@@ -7,7 +7,7 @@
 Plugin Name: Wordpress Facebook Events Widget
 Description: Widget to display timer for Facebook events in Wordpress
 Author: Mateusz Wojtuła
-Version: 1.0
+Version: 1.1
 Author URI: http://www.matw.pl
 */
 require_once 'src/facebook.php';
@@ -39,6 +39,16 @@ class MW_FB_Events_Widget extends WP_Widget {
 			'description' => __( 'Use this widget to display timer for Facebook events on Your page.'),
 		));
 		$this->fb_init();
+		
+		/* Register stylesheet. */
+		wp_register_style( 'mw_fb_events_widget_css', plugins_url('style.css', __FILE__) );
+		/* Register script. */
+		wp_register_script( 'mw_fb_events_widget_js', plugins_url('functions.js', __FILE__) );
+
+		if ( is_active_widget( false, false, $this->id_base ) ) {
+			wp_enqueue_style('mw_fb_events_widget_css');
+			wp_enqueue_script('mw_fb_events_widget_js');
+		}
 	}
 	
 	/**
@@ -104,34 +114,8 @@ class MW_FB_Events_Widget extends WP_Widget {
 			if ($instance['hundredth_second']) $timer_count++;
 ?>
 <style type="text/css">
-	.mw_widget p {
-		text-align: justify;
-	}
-	.mw_widget h3 span {
-		cursor: pointer;
-	}
 	#<?php echo $args['widget_id']?> .mw_time_box {
 		width: <?php echo $timer_count>0?100/$timer_count:0?>%;
-		height: 60px;
-		text-align: center;
-		background: #fff;
-		float: left;
-	}
-	.mw_time_box .mw_timer {
-		font-size: 20px;
-		width: 100%;
-		font-weight: bold;
-	}
-	.mw_time_box .mw_caption {
-		font-size: 11px;
-		display: block;
-	}
-	.mw_clear {
-		clear: both;
-	}
-	#mw_event_picture {
-		text-align: center;
-		padding: 0px 10px 18px 10px;
 	}
 </style>
 		<aside id="<?php echo $args['widget_id']?>" class="widget mw_widget">
@@ -181,64 +165,13 @@ class MW_FB_Events_Widget extends WP_Widget {
 		</aside>
 <script type="text/javascript">
 <!--
-function mw_timer<?php echo $this->count?>()
-{
-	var start = Date.parse('<?php echo $event['start_time']?>');
-	var c = new Date();
-	var current = c.getTime();
-
-	var hundredth_second = 10;
-	var seconds = 1000;
-	var minutes = 60000;
-	var hours = 3600000;
-	var days = 86400000;
-		
-	var miliseconds = start - current;
-	
-	var left = miliseconds;
-	
-	if (left > 0) {
-		<?php if(!empty($instance['days'])):?>
-		var timer_d = Math.floor(left/days);
-		document.getElementById("mw_days<?php echo $this->count?>").innerHTML = timer_d;
-		left -= timer_d*days;
-		<?php endif;?>
-		<?php if(!empty($instance['hours'])):?>
-		var timer_h = Math.floor(left/hours);
-		document.getElementById("mw_hours<?php echo $this->count?>").innerHTML = timer_h;
-		left -= timer_h*hours;
-		<?php endif;?>
-		<?php if(!empty($instance['minutes'])):?>
-		var timer_m = Math.floor(left/minutes);
-		document.getElementById("mw_minutes<?php echo $this->count?>").innerHTML = timer_m;
-		left -= timer_m*minutes;
-		<?php endif;?>
-		<?php if(!empty($instance['seconds'])):?>
-		var timer_s = Math.floor(left/seconds);
-		document.getElementById("mw_seconds<?php echo $this->count?>").innerHTML = timer_s;
-		left -= timer_s*seconds;
-		<?php endif;?>
-		<?php if(!empty($instance['hundredth_second'])):?>
-		var timer_ms = Math.floor(left/hundredth_second);
-		document.getElementById("mw_hundredth_second<?php echo $this->count?>").innerHTML = timer_ms;
-		left -= timer_ms*hundredth_second;
-		<?php endif;?>
-	} else {
-		document.getElementById("mw_days<?php echo $this->count?>").innerHTML = 0;
-		document.getElementById("mw_hours<?php echo $this->count?>").innerHTML = 0;
-		document.getElementById("mw_minutes<?php echo $this->count?>").innerHTML = 0;
-		document.getElementById("mw_seconds<?php echo $this->count?>").innerHTML = 0;
-		document.getElementById("mw_hundredth_second<?php echo $this->count?>").innerHTML = 0;
-	}
-}
-mw_timer<?php echo $this->count?>();
 <?php 
 	if (!empty($instance['hundredth_second'])) {
-		echo 'var mw_interval'.$this->count.' = setInterval(function(){mw_timer'.$this->count.'()},10);';
+		?>var mw_interval<?php echo $this->count?> = setInterval(function(){mw_timer(<?php echo $this->count?>,'<?php echo $event['start_time']?>',<?php echo !empty($instance['days'])?1:0?>,<?php echo !empty($instance['hours'])?1:0?>,<?php echo !empty($instance['minutes'])?1:0?>,<?php echo !empty($instance['seconds'])?1:0?>,<?php echo !empty($instance['hundredth_second'])?1:0?>);},10);<?php 
 	} elseif(!empty($instance['seconds'])) {
-		echo 'var mw_interval'.$this->count.' = setInterval(function(){mw_timer'.$this->count.'()},1000);';
+		?>var mw_interval<?php echo $this->count?> = setInterval(function(){mw_timer(<?php echo $this->count?>,'<?php echo $event['start_time']?>',<?php echo !empty($instance['days'])?1:0?>,<?php echo !empty($instance['hours'])?1:0?>,<?php echo !empty($instance['minutes'])?1:0?>,<?php echo !empty($instance['seconds'])?1:0?>,<?php echo !empty($instance['hundredth_second'])?1:0?>);},10);<?php
 	} else {
-		echo 'var mw_interval'.$this->count.' = setInterval(function(){mw_timer'.$this->count.'()},60000);';
+		?>var mw_interval<?php echo $this->count?> = setInterval(function(){mw_timer(<?php echo $this->count?>,'<?php echo $event['start_time']?>',<?php echo !empty($instance['days'])?1:0?>,<?php echo !empty($instance['hours'])?1:0?>,<?php echo !empty($instance['minutes'])?1:0?>,<?php echo !empty($instance['seconds'])?1:0?>,<?php echo !empty($instance['hundredth_second'])?1:0?>);},10);<?php
 	}
 ?>
 //-->
@@ -256,7 +189,7 @@ mw_timer<?php echo $this->count?>();
 	 * @param array $instance     Original widget instance.
 	 * @return array Updated widget instance.
 	 */
-	function update( $new_instance, $instance ) {
+	public function update( $new_instance, $instance ) {
 		$event_id  = strip_tags( $new_instance['event_id'] );
 		$event_data = $this->get_event_data($event_id);
 		
@@ -291,7 +224,7 @@ mw_timer<?php echo $this->count?>();
 	 * @param array $instance
 	 * @return void
 	 */
-	function form( $instance ) {
+	public function form( $instance ) {
 		$title  = empty( $instance['title'] ) ? '' : esc_attr( $instance['title'] );
 		$event_id  = empty( $instance['event_id'] ) ? '' : esc_attr( $instance['event_id'] );
 		$picture = empty( $instance['picture'] ) ? 0 : 1;
@@ -345,7 +278,7 @@ mw_timer<?php echo $this->count?>();
 	/**
 	 * Register widget
 	 */
-	public function register() {
+	public static function register() {
 		return register_widget( 'MW_FB_Events_Widget' );
 	}
 }
